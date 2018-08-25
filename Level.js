@@ -6,7 +6,7 @@ export default class Level {
     this.entities = new Set();
   }
   update(deltaTime) {
-    this.entities.forEach(entitiy => {
+    this.entities.forEach(entity => {
       entity.update(deltaTime);
     });
   }
