@@ -1,10 +1,12 @@
 //classes
-import Compositer from "./Compositer.js";
+import Compositor from "./Compositor.js";
+import Timer from "./Timer.js";
 
 //funcs
-import { loadLevel } from "./loaders.js";
+import { createMario } from "./entities.js";
+import { loadLevel } from "./Loaders.js";
 import { createBackgroundLayer, createSpriteLayer } from "./layers.js";
-import { loadMarioSprite, loadBackgroundSprites } from "./sprites.js";
+import { loadBackgroundSprites } from "./sprites.js";
 
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
@@ -12,32 +14,31 @@ canvas.width = document.body.clientWidth;
 canvas.height = document.body.scrollWidth;
 ctx.scale(2, 2);
 
-Promise.all([
-  loadBackgroundSprites(),
-  loadLevel("1-1"),
-  loadMarioSprite()
-]).then(([backgroundSprites, level, marioSprite]) => {
-  const comp = new Compositer();
-  const backgroundLayer = createBackgroundLayer(
-    level.backgrounds,
-    backgroundSprites
-  );
-  comp.layers.push(backgroundLayer);
+Promise.all([createMario(), loadBackgroundSprites(), loadLevel("1-1")]).then(
+  ([mario, backgroundSprites, level]) => {
+    const comp = new Compositor();
 
-  const pos = {
-    x: 64,
-    y: 64
-  };
+    const backgroundLayer = createBackgroundLayer(
+      level.backgrounds,
+      backgroundSprites
+    );
+    //comp.layers.push(backgroundLayer);
 
-  const spriteLayer = createSpriteLayer(marioSprite, pos);
-  comp.layers.push(spriteLayer);
+    const gravity = 30;
+    mario.pos.set(64, 180);
+    mario.vel.set(200, -600);
 
-  const update = () => {
-    comp.draw(ctx);
-    pos.x += 2;
-    pos.y += 2;
+    const spriteLayer = createSpriteLayer(mario);
+    comp.layers.push(spriteLayer);
 
-    requestAnimationFrame(update);
-  };
-  update();
-});
+    const timer = new Timer(1 / 60);
+    timer.update = deltaTime => {
+      comp.draw(ctx);
+      mario.update(deltaTime);
+
+      mario.vel.y += gravity;
+    };
+
+    timer.start();
+  }
+);
