@@ -1,5 +1,5 @@
 import SpriteSheet from "./SpriteSheet.js";
-import { loadImage } from "./loaders.js";
+import { loadImage } from "./Loaders.js";
 
 export const loadBackgroundSprites = () => {
   return loadImage("./tiles.png").then(image => {
