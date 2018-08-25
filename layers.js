@@ -1,17 +1,11 @@
-const drawBackground = (background, ctx, sprites) => {
+const drawBackground = (background, context, sprites) => {
   background.ranges.forEach(([x1, x2, y1, y2]) => {
-    for (let x = x1; x < 25; ++x) {
-      for (let y = y1; y < 14; ++y) {
-        sprites.drawTile(background.tile, ctx, x, y);
+    for (let x = x1; x < x2; ++x) {
+      for (let y = y1; y < y2; ++y) {
+        sprites.drawTile(background.tile, context, x, y);
       }
     }
   });
-};
-
-export const createSpriteLayer = (sprite, pos) => {
-  return context => {
-    sprite.draw("idle", context, pos.x, pos.y);
-  };
 };
 
 export const createBackgroundLayer = (backgrounds, sprites) => {
@@ -19,12 +13,17 @@ export const createBackgroundLayer = (backgrounds, sprites) => {
   buffer.width = 256;
   buffer.height = 240;
 
-  backgrounds.forEach(bg => {
-    drawBackground(bg, buffer.getContext("2d"), sprites);
+  backgrounds.forEach(background => {
+    drawBackground(background, buffer.getContext("2d"), sprites);
   });
 
-  const drawBackgroundLayer = context => {
+  return context => {
     context.drawImage(buffer, 0, 0);
   };
-  return drawBackgroundLayer;
+};
+
+export const createSpriteLayer = entity => {
+  return function drawSpriteLayer(context) {
+    entity.draw(context);
+  };
 };
