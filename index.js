@@ -1,12 +1,10 @@
 //classes
-import Compositor from "./Compositor.js";
 import Timer from "./Timer.js";
-
+import Level from "./Level.js";
 //funcs
 import { createMario } from "./entities.js";
 import { loadLevel } from "./Loaders.js";
-import { createBackgroundLayer, createSpriteLayer } from "./layers.js";
-import { loadBackgroundSprites } from "./sprites.js";
+
 import Keyboard from "./KeyboardState.js";
 
 const canvas = document.getElementById("canvas");
@@ -15,43 +13,32 @@ canvas.width = document.body.clientWidth;
 canvas.height = document.body.scrollWidth;
 ctx.scale(2, 2);
 
-Promise.all([createMario(), loadBackgroundSprites(), loadLevel("1-1")]).then(
-  ([mario, backgroundSprites, level]) => {
-    const comp = new Compositor();
+Promise.all([createMario(), loadLevel("1-1")]).then(([mario, level]) => {
+  const gravity = 2000;
+  mario.pos.set(64, 180);
 
-    const backgroundLayer = createBackgroundLayer(
-      level.backgrounds,
-      backgroundSprites
-    );
-    comp.layers.push(backgroundLayer);
+  level.entities.add(mario);
 
-    const gravity = 2000;
-    mario.pos.set(64, 180);
+  const SPACE = 32;
 
-    const SPACE = 32;
+  const input = new Keyboard();
+  input.addMapping(SPACE, keyState => {
+    if (keyState) {
+      mario.jump.start();
+    } else {
+      mario.jump.cancel();
+    }
+  });
 
-    const input = new Keyboard();
-    input.addMapping(SPACE, keyState => {
-      if (keyState) {
-        mario.jump.start();
-      } else {
-        mario.jump.cancel();
-      }
-    });
+  input.listenTo(window);
 
-    input.listenTo(window);
+  const timer = new Timer(1 / 60);
+  timer.update = deltaTime => {
+    level.update(deltaTime);
+    level.comp.draw(ctx);
 
-    const spriteLayer = createSpriteLayer(mario);
-    comp.layers.push(spriteLayer);
+    mario.vel.y += gravity * deltaTime;
+  };
 
-    const timer = new Timer(1 / 60);
-    timer.update = deltaTime => {
-      mario.update(deltaTime);
-      comp.draw(ctx);
-
-      mario.vel.y += gravity * deltaTime;
-    };
-
-    timer.start();
-  }
-);
+  timer.start();
+});
