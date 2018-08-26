@@ -33,7 +33,7 @@ export const loadLevel = name => {
     loadBackgroundSprites()
   ]).then(([levelSpec, backgroundSprites]) => {
     const level = new Level();
-    console.log(level);
+
     createTiles(level, levelSpec.backgrounds);
 
     const backgroundLayer = createBackgroundLayer(level, backgroundSprites);

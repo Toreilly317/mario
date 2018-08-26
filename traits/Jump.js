@@ -3,21 +3,23 @@ import Trait from "../Trait.js";
 export default class Jump extends Trait {
   constructor() {
     super("jump");
-    //how long button can be pressed
+
     this.duration = 0.5;
+    this.engageTime = 0;
+
     this.velocity = 200;
-    this.engagedTime = 0;
   }
 
   start() {
-    this.engagedTime = this.duration;
+    this.engageTime = this.duration;
   }
 
   cancel() {
-    this.engagedTime = 0;
+    this.engageTime = 0;
   }
+
   update(entity, deltaTime) {
-    if (this.engaged > 0) {
+    if (this.engageTime > 0) {
       entity.vel.y = -this.velocity;
       this.engageTime -= deltaTime;
     }

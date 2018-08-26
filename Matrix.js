@@ -17,4 +17,12 @@ export default class Matrix {
     }
     return undefined;
   }
+
+  forEach(callback) {
+    this.grid.forEach((column, x) => {
+      column.forEach((value, y) => {
+        callback(value, x, y);
+      });
+    });
+  }
 }
