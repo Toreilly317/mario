@@ -1,32 +1,39 @@
-import {Vec2} from './math.js';
+import { Vec2 } from "./math.js";
 
 export class Trait {
-    constructor(name) {
-        this.NAME = name;
-    }
+  constructor(name) {
+    this.NAME = name;
+  }
 
-    update() {
-        console.warn('Unhandled update call in Trait');
-    }
+  obstruct() {}
+  update() {
+    console.warn("Unhandled update call in Trait");
+  }
 }
 
 export default class Entity {
-    constructor() {
-        this.pos = new Vec2(0, 0);
-        this.vel = new Vec2(0, 0);
-        this.size = new Vec2(0, 0);
+  constructor() {
+    this.pos = new Vec2(0, 0);
+    this.vel = new Vec2(0, 0);
+    this.size = new Vec2(0, 0);
 
-        this.traits = [];
-    }
+    this.traits = [];
+  }
 
-    addTrait(trait) {
-        this.traits.push(trait);
-        this[trait.NAME] = trait;
-    }
+  addTrait(trait) {
+    this.traits.push(trait);
+    this[trait.NAME] = trait;
+  }
 
-    update(deltaTime) {
-        this.traits.forEach(trait => {
-            trait.update(this, deltaTime);
-        });
-    }
+  obstruct(side) {
+    this.traits.forEach(trait => {
+      trait.obstruct(this, side);
+    });
+  }
+
+  update(deltaTime) {
+    this.traits.forEach(trait => {
+      trait.update(this, deltaTime);
+    });
+  }
 }
